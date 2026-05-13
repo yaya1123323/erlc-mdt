@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERLC Police MDT & Supervisory Review</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f1115;
+      color: white;
+    }
+
+    header {
+      background: #1a1d24;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #2b313d;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      background: #1f242d;
+      border: none;
+      color: white;
+      padding: 14px;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+
+    .tab:hover {
+      background: #2b313d;
+    }
+
+    .form-section {
+      display: none;
+      background: #1a1d24;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #2b313d;
+    }
+
+    .form-section.active {
+      display: block;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    label {
+      font-size: 14px;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #2b313d;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .full {
+      grid-column: span 2;
+    }
+
+    button.submit {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button.submit:hover {
+      background: #1d4ed8;
+    }
+
+    .output {
+      margin-top: 20px;
+      background: #11151b;
+      padding: 15px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      border: 1px solid #2b313d;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ERLC POLICE MDT SYSTEM</h1>
+  </header>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab" onclick="showForm('arrest')">Arrest Log</button>
+      <button class="tab" onclick="showForm('ticket')">Ticket Log</button>
+      <button class="tab" onclick="showForm('warning')">Warning Log</button>
+      <button class="tab" onclick="showForm('scene')">Scene Outcome</button>
+    </div>
+
+    <!-- Arrest Form -->
+    <div id="arrest" class="form-section active">
+      <h2>Arrest Report</h2>
+      <div class="grid">
+        <div>
+          <label>Officer Name</label>
+          <input id="aOfficer" />
+        </div>
+        <div>
+          <label>Badge Number</label>
+          <input id="aBadge" />
+        </div>
+        <div>
+          <label>Suspect Name</label>
+          <input id="aSuspect" />
+        </div>
+        <div>
+          <label>Charges</label>
+          <input id="aCharges" />
+        </div>
+        <div>
+          <label>Location</label>
+          <input id="aLocation" />
+        </div>
+        <div>
+          <label>Fine Amount</label>
+          <input id="aFine" />
+        </div>
+        <div>
+          <label>Jail Time</label>
+          <input id="aJail" />
+        </div>
+        <div>
+          <label>Vehicle</label>
+          <input id="aVehicle" />
+        </div>
+        <div class="full">
+          <label>Incident Narrative</label>
+          <textarea id="aNarrative"></textarea>
+        </div>
+      </div>
+      <button class="submit" onclick="generateArrest()">Generate Arrest Log</button>
+      <div class="output" id="arrestOutput"></div>
+      <button class="submit" onclick="submitSupervisor('Arrest Report', document.getElementById('arrestOutput').innerText)">Submit To Supervisory Board</button>
+    </div>
+
+    <!-- Ticket Form -->
+    <div id="ticket" class="form-section">
+      <h2>Ticket Report</h2>
+      <div class="grid">
+        <div>
+          <label>Officer Name</label>
+          <input id="tOfficer" />
+        </div>
+        <div>
+          <label>Driver Name</label>
+          <input id="tDriver" />
+        </div>
+        <div>
+          <label>Violation</label>
+          <input id="tViolation" />
+        </div>
+        <div>
+          <label>Vehicle</label>
+          <input id="tVehicle" />
+        </div>
+        <div>
+          <label>Fine Amount</label>
+          <input id="tFine" />
+        </div>
+        <div>
+          <label>Location</label>
+          <input id="tLocation" />
+        </div>
+        <div class="full">
+          <label>Notes</label>
+          <textarea id="tNotes"></textarea>
+        </div>
+      </div>
+      <button class="submit" onclick="generateTicket()">Generate Ticket Log</button>
+      <div class="output" id="ticketOutput"></div>
+      <button class="submit" onclick="submitSupervisor('Ticket Report', document.getElementById('ticketOutput').innerText)">Submit To Supervisory Board</button>
+    </div>
+
+    <!-- Warning Form -->
+    <div id="warning" class="form-section">
+      <h2>Warning Report</h2>
+      <div class="grid">
+        <div>
+          <label>Officer Name</label>
+          <input id="wOfficer" />
+        </div>
+        <div>
+          <label>Citizen Name</label>
+          <input id="wCitizen" />
+        </div>
+        <div>
+          <label>Reason</label>
+          <input id="wReason" />
+        </div>
+        <div>
+          <label>Location</label>
+          <input id="wLocation" />
+        </div>
+        <div>
+          <label>Warning Type</label>
+          <select id="wType">
+            <option>Verbal</option>
+            <option>Written</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>Notes</label>
+          <textarea id="wNotes"></textarea>
+        </div>
+      </div>
+      <button class="submit" onclick="generateWarning()">Generate Warning Log</button>
+      <div class="output" id="warningOutput"></div>
+      <button class="submit" onclick="submitSupervisor('Warning Report', document.getElementById('warningOutput').innerText)">Submit To Supervisory Board</button>
+    </div>
+
+    <!-- Scene Form -->
+    <div id="scene" class="form-section">
+      <h2>Scene Outcome Report</h2>
+      <div class="grid">
+        <div>
+          <label>Scene Type</label>
+          <input id="sType" />
+        </div>
+        <div>
+          <label>Primary Officer</label>
+          <input id="sOfficer" />
+        </div>
+        <div>
+          <label>Location</label>
+          <input id="sLocation" />
+        </div>
+        <div>
+          <label>Units Involved</label>
+          <input id="sUnits" />
+        </div>
+        <div>
+          <label>Arrests Made</label>
+          <input id="sArrests" />
+        </div>
+        <div>
+          <label>Vehicles Towed</label>
+          <input id="sTow" />
+        </div>
+        <div class="full">
+          <label>Scene Outcome</label>
+          <textarea id="sOutcome"></textarea>
+        </div>
+      </div>
+      <button class="submit" onclick="generateScene()">Generate Scene Outcome</button>
+      <div class="output" id="sceneOutput"></div>
+      <button class="submit" onclick="submitSupervisor('Scene Outcome Report', document.getElementById('sceneOutput').innerText)">Submit To Supervisory Board</button>
+    </div>
+  </div>
+
+  <script>
+    function showForm(id) {
+      document.querySelectorAll('.form-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(id).classList.add('active');
+    }
+
+    function randomCase(prefix) {
+      return prefix + '-' + Math.floor(10000 + Math.random() * 90000);
+    }
+
+    function generateArrest() {
+      document.getElementById('arrestOutput').innerText =
+`CASE ID: ${randomCase('AR')}
+Officer: ${aOfficer.value}
+Badge: ${aBadge.value}
+Suspect: ${aSuspect.value}
+Charges: ${aCharges.value}
+Location: ${aLocation.value}
+Fine: ${aFine.value}
+Jail Time: ${aJail.value}
+Vehicle: ${aVehicle.value}
+Narrative: ${aNarrative.value}`;
+    }
+
+    function generateTicket() {
+      document.getElementById('ticketOutput').innerText =
+`TICKET ID: ${randomCase('CT')}
+Officer: ${tOfficer.value}
+Driver: ${tDriver.value}
+Violation: ${tViolation.value}
+Vehicle: ${tVehicle.value}
+Fine: ${tFine.value}
+Location: ${tLocation.value}
+Notes: ${tNotes.value}`;
+    }
+
+    function generateWarning() {
+      document.getElementById('warningOutput').innerText =
+`WARNING ID: ${randomCase('WR')}
+Officer: ${wOfficer.value}
+Citizen: ${wCitizen.value}
+Reason: ${wReason.value}
+Location: ${wLocation.value}
+Type: ${wType.value}
+Notes: ${wNotes.value}`;
+    }
+
+    function generateScene() {
+      document.getElementById('sceneOutput').innerText =
+`SCENE ID: ${randomCase('SC')}
+Scene Type: ${sType.value}
+Primary Officer: ${sOfficer.value}
+Location: ${sLocation.value}
+Units Involved: ${sUnits.value}
+Arrests Made: ${sArrests.value}
+Vehicles Towed: ${sTow.value}
+Outcome: ${sOutcome.value}`;
+    }
+  function submitSupervisor(type, content) {
+      if (!content || content.trim() === '') {
+        alert('Generate a report first before submitting.');
+        return;
+      }
+
+      const webhookMessage = `SUPERVISORY BOARD SUBMISSION
+
+Type: ${type}
+
+${content}`;
+
+      navigator.clipboard.writeText(webhookMessage);
+
+      alert('Report copied. Paste it into your Supervisory Review Discord channel or webhook system.');
+    }
+  </script>
+</body>
+</html>
